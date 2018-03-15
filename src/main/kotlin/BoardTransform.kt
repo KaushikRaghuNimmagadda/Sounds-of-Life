@@ -1,3 +1,5 @@
+package game
+
 interface BoardTransform {
     fun update(coord : NDimensionalCoordinate, board : Board) : State
 }

@@ -1,3 +1,5 @@
+package game
+
 import java.util.*
 
 class Board(val bound : NDimensionalCoordinate) {

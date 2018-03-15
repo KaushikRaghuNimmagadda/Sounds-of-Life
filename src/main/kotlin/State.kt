@@ -1,3 +1,5 @@
+package game
+
 enum class State {
     DEAD {
         override fun toString(): String {

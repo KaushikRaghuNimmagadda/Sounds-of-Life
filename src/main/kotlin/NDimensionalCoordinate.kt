@@ -1,4 +1,5 @@
-import com.sun.org.apache.xml.internal.dtm.ref.DTMDefaultBaseIterators
+package game
+
 import kotlin.math.abs
 
 class NDimensionalCoordinate(val numDimensions : Int, var coords : List<Int>) {

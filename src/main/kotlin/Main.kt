@@ -1,3 +1,5 @@
+import game.*
+
 fun main(args : Array<String>) {
     val b =  Board(NDimensionalCoordinate(2, arrayListOf(2, 10)))
     printIteration2d(b, Swapper, 5)
