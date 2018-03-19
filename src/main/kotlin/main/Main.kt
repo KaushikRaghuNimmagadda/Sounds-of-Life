@@ -1,3 +1,5 @@
+package main
+
 import game.*
 
 fun main(args : Array<String>) {
@@ -5,6 +7,10 @@ fun main(args : Array<String>) {
     printIteration2d(b, Swapper, 5)
 //    val c = Board(NDimensionalCoordinate(3, arrayListOf(2, 2, 2)))
 //    printIteration3d(c, Swapper, 1)
+}
+
+fun printBoard(b : Board) {
+
 }
 
 fun printIteration3d(b : Board, t : BoardTransform, numIters: Int){
