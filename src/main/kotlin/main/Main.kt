@@ -1,12 +1,15 @@
 package main
 
 import game.*
+import site.*
+
 
 fun main(args : Array<String>) {
-    val b =  Board(NDimensionalCoordinate(2, arrayListOf(2, 10)))
-    printIteration2d(b, Swapper, 5)
+//    val b =  Board(NDimensionalCoordinate(2, arrayListOf(2, 10)))
+//    printIteration2d(b, Swapper, 5)
 //    val c = Board(NDimensionalCoordinate(3, arrayListOf(2, 2, 2)))
 //    printIteration3d(c, Swapper, 1)
+    demo()
 }
 
 fun printBoard(b : Board) {
