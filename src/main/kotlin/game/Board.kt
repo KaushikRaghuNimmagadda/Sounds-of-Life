@@ -26,6 +26,13 @@ class Board {
         }
     }
 
+    constructor(cells: MutableMap<NDimensionalCoordinate, State>) {
+        // bound is coord with largest sum of coordinates.
+        this.bound = cells.keys.maxBy { it.coords.sum() }!!
+        assert(cells.keys.all { it.numDimensions == bound.numDimensions })
+        this.cells = cells
+    }
+
     // size of board in a given dimension
     fun getSizeInDimension(dim : Int) : Int {
         assert(dim >= 0 && dim < bound.numDimensions)
