@@ -4,7 +4,25 @@ interface BoardTransform {
     fun update(coord : NDimensionalCoordinate, board : Board) : State
 }
 
-// singleton
+// class for easy construction of board transformations
+open class TemplateTransform(val birthCounts : List<Int>, val surviveCounts : List<Int>) : BoardTransform {
+    override fun update(coord: NDimensionalCoordinate, board: Board): State {
+        val liveCount = board.getNeighborCount(coord, State.ALIVE)
+        val curState : State = board.getCellAt(coord)
+        if(curState == State.DEAD && liveCount in birthCounts) {
+            // cell rebirth
+            return State.ALIVE
+        } else if(curState == State.ALIVE && liveCount in surviveCounts) {
+            // cell stays alive
+            return State.ALIVE
+        }
+        return State.DEAD
+    }
+}
+
+// conway's rules using template transform
+object CWay : TemplateTransform(listOf(3), listOf(2, 3))
+
 object Conway : BoardTransform {
     override fun update(coord: NDimensionalCoordinate, board: Board): State {
         val liveCount = board.getNeighborCount(coord, State.ALIVE)
@@ -34,3 +52,5 @@ object Swapper : BoardTransform {
         return if (curState == State.DEAD) State.ALIVE else State.DEAD
     }
 }
+
+object HighLife : TemplateTransform(listOf(3, 6), listOf(2, 3))
