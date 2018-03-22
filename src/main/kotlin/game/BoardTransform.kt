@@ -5,7 +5,9 @@ interface BoardTransform {
 }
 
 // class for easy construction of board transformations
-open class TemplateTransform(val birthCounts : List<Int>, val surviveCounts : List<Int>) : BoardTransform {
+// declared open so we can subclass it and just provide default arguments
+// do we want to make a factory from the game strings to these? Probably not needed.
+open class TemplateTransform(val birthCounts : Set<Int>, val surviveCounts : Set<Int>) : BoardTransform {
     override fun update(coord: NDimensionalCoordinate, board: Board): State {
         val liveCount = board.getNeighborCount(coord, State.ALIVE)
         val curState : State = board.getCellAt(coord)
@@ -21,7 +23,7 @@ open class TemplateTransform(val birthCounts : List<Int>, val surviveCounts : Li
 }
 
 // conway's rules using template transform
-object CWay : TemplateTransform(listOf(3), listOf(2, 3))
+object CWay : TemplateTransform(setOf(3), setOf(2, 3))
 
 object Conway : BoardTransform {
     override fun update(coord: NDimensionalCoordinate, board: Board): State {
@@ -53,4 +55,4 @@ object Swapper : BoardTransform {
     }
 }
 
-object HighLife : TemplateTransform(listOf(3, 6), listOf(2, 3))
+object HighLife : TemplateTransform(setOf(3, 6), setOf(2, 3))

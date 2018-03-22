@@ -2,13 +2,27 @@ package game
 
 import java.util.*
 
-class Board(val bound : NDimensionalCoordinate) {
+class Board {
     // mapping
     var cells : MutableMap<NDimensionalCoordinate, State> = HashMap()
-
-    init {
+    val bound : NDimensionalCoordinate
+    constructor(bound: NDimensionalCoordinate) {
+        this.bound = bound
         for (coord : NDimensionalCoordinate in generateSpace(bound)){
             cells[coord] = State.DEAD
+        }
+    }
+
+    constructor(bound: NDimensionalCoordinate, alive: Set<NDimensionalCoordinate>) {
+        this.bound = bound
+        // assert that the alive set are of the same dimension as the bound
+        assert(alive.all { it.numDimensions == bound.numDimensions })
+        for (coord : NDimensionalCoordinate in generateSpace(bound)){
+            if(coord in alive) {
+                cells[coord] = State.ALIVE
+            } else {
+                cells[coord] = State.DEAD
+            }
         }
     }
 
