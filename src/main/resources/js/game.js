@@ -7,12 +7,16 @@ $(document).ready(() => {
     let $canvas = $("#canvas");
     let canvas = document.getElementById("canvas");
     let ctx = $canvas[0].getContext("2d");
+    // number of rows and columns on our board
+    let rows = canvas.height / squareSize;
+    let cols = canvas.width / squareSize;
     $canvas.click((event) => {
         let row = Math.floor(event.offsetY / squareSize);
         let col = Math.floor(event.offsetX / squareSize);
         console.log(row);
         console.log(col);
         drawCell(row, col, Math.random() > 0.5);
+        isAlive(row, col);
     });
     // draws initial grid
     function drawGrid() {
@@ -39,6 +43,37 @@ $(document).ready(() => {
         ctx.fillStyle = colors[alive];
         // adding 1 and subtracting 1 to keep the grid lines on the canvas
         ctx.fillRect(col * squareSize + 1, row * squareSize + 1, squareSize - 1, squareSize - 1);
+    }
+
+    // converts r, g, b values to hex color string
+    function rgbToHex(r, g, b) {
+        if (r > 255 || g > 255 || b > 255) {
+            throw "invalid color";
+        }
+        return ((r << 16) | (g << 8) | b).toString(16).toUpperCase();
+    }
+
+    // checks whether a cell at row, col is alive or not.
+    function isAlive(row, col) {
+        // start by calculating the center of the cell
+        let centX = col * squareSize + squareSize / 2;
+        let centY = row * squareSize + squareSize / 2;
+        let color = ctx.getImageData(centX, centY, 1, 1).data;
+        // get color of clicked cell as a string
+        let colorString = "#" + ("000000" + rgbToHex(color[0], color[1], color[2])).slice(-6);
+        console.log(colorString);
+        return colorString === "#00FF00";
+    }
+
+    // builds map of current cell states to send to backend
+    function buildMap() {
+        let m = {};
+        for(let row = 0; row < rows; row ++) {
+            for(let col = 0; col < cols; col ++) {
+                m[[row, col]] = isAlive(row, col);
+            }
+        }
+        return m;
     }
 
     drawGrid();
