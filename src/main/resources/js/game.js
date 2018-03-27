@@ -12,6 +12,10 @@ $(document).ready(() => {
     // number of rows and columns on our board
     let rows = canvas.height / squareSize;
     let cols = canvas.width / squareSize;
+
+    // map for cells
+    let cells = initGrid();
+
     $canvas.click((event) => {
         let row = Math.floor(event.offsetY / squareSize);
         let col = Math.floor(event.offsetX / squareSize);
@@ -19,6 +23,16 @@ $(document).ready(() => {
         console.log(col);
         drawCell(row, col, true);
     });
+    // sets up initial grid object
+    function initGrid() {
+        let grid = {};
+        for(let r = 0; r < rows; r ++) {
+            for(let c = 0; c < cols; c ++) {
+                grid[[r, c]] = false;
+            }
+        }
+        return grid;
+    }
     // draws initial grid
     function drawGrid() {
         let height = canvas.height;
@@ -44,6 +58,8 @@ $(document).ready(() => {
         ctx.fillStyle = colors[alive];
         // adding 1 and subtracting 1 to keep the grid lines on the canvas
         ctx.fillRect(col * squareSize + 1, row * squareSize + 1, squareSize - 1, squareSize - 1);
+        // update cell states object
+        cells[[row, col]] = alive;
     }
 
     // converts r, g, b values to hex color string
@@ -83,7 +99,8 @@ $(document).ready(() => {
         // just makes an empty one? Turns out maps can't be serialized
         // to JSON.
         let start_time = new Date().getTime();
-        let m = buildMap();
+        // let m = buildMap();
+        let m = cells;
         let map_time = new Date().getTime();
         console.log("time to build map: " + (map_time - start_time).toString());
         // console.log(Object.keys(m).length);
@@ -96,6 +113,7 @@ $(document).ready(() => {
                 // parse stringified key into array of ints
                 let arr = JSON.parse(key);
                 // fill in the cell
+                // note that updating our cell map is handled by drawCell
                 drawCell(parseInt(arr[0]), parseInt(arr[1]), responseJson[key]);
             }
             console.log("received and finished");
