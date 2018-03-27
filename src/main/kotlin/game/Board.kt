@@ -45,7 +45,7 @@ class Board {
     // gets neighbors of a given location
     fun getNeighbors(coord : NDimensionalCoordinate) : List<NDimensionalCoordinate> {
         assert(coord.numDimensions == bound.numDimensions)
-        return cells.keys.filter { coord.maxDif(it) <= 1 }
+        return cells.keys.filter { coord.maxDif(it) == 1 }
     }
 
     // counts neighbors that have a certain state
