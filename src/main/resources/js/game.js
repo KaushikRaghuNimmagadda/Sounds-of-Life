@@ -3,6 +3,8 @@ $(document).ready(() => {
     let colors = {};
     colors[true] = "#00FF00";
     colors[false] = "#000000";
+    let $button = $("#button");
+    $button.click(updateBoard);
     const squareSize = 10;
     let $canvas = $("#canvas");
     let canvas = document.getElementById("canvas");
@@ -61,12 +63,13 @@ $(document).ready(() => {
         let color = ctx.getImageData(centX, centY, 1, 1).data;
         // get color of clicked cell as a string
         let colorString = "#" + ("000000" + rgbToHex(color[0], color[1], color[2])).slice(-6);
-        console.log(colorString);
+        // console.log(colorString);
         return colorString === "#00FF00";
     }
 
     // builds map of current cell states to send to backend
     function buildMap() {
+        // let m = new Map();
         let m = {};
         for(let row = 0; row < rows; row ++) {
             for(let col = 0; col < cols; col ++) {
@@ -76,5 +79,21 @@ $(document).ready(() => {
         return m;
     }
 
+    function updateBoard() {
+        // so buildMap produces the correct map but JSON.stringify
+        // just makes an empty one? Turns out maps can't be serialized
+        // to JSON.
+        let m = buildMap();
+        let s = JSON.stringify(m);
+        // console.log(m);
+        // console.log(s);
+        $.post("/update", s, (responseJson) => {
+            responseJson = JSON.parse(responseJson);
+            // console.log(responseJson);
+            console.log(Object.keys(responseJson.values).length);
+            // console.log(typeof responseJson);
+            console.log("received and finished");
+        });
+    }
     drawGrid();
 });
