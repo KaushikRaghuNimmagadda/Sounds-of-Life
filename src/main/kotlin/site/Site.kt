@@ -21,6 +21,7 @@ import io.ktor.routing.*
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.*
 import java.io.File
+import kotlin.system.measureTimeMillis
 
 
 val GSON = Gson()
@@ -51,6 +52,7 @@ fun startServer() {
                 call.respondText("Hello!", ContentType.Text.Html)
             }
             post("/update") {
+                val elapsed = measureTimeMillis {
                 val params = call.receiveParameters()
                 val b : Board = mapToBoard(params)
 //                println(b.cells.size)
@@ -66,6 +68,8 @@ fun startServer() {
                 val response = boardToJson(b)
 //                println(response)
                 call.respond(response)
+                }
+                println(elapsed)
             }
             static ("game") {
                 staticRootFolder = File("src/main/resources")

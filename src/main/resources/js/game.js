@@ -89,6 +89,7 @@ $(document).ready(() => {
             responseJson = JSON.parse(responseJson);
             console.log(responseJson);
             console.log(Object.keys(responseJson).length);
+            let draw_time = new Date().getTime();
             for(const key of Object.keys(responseJson)) {
                 // parse stringified key into array of ints
                 let arr = JSON.parse(key);
@@ -96,7 +97,8 @@ $(document).ready(() => {
                 drawCell(parseInt(arr[0]), parseInt(arr[1]), responseJson[key]);
             }
             console.log("received and finished");
-            console.log(new Date().getTime() - start_time);
+            console.log("total time to draw: " + (new Date().getTime() - draw_time).toString());
+            console.log("total time to post: " + (new Date().getTime() - start_time).toString());
         });
     }
     drawGrid();
