@@ -1,6 +1,11 @@
 package site
 
 import com.google.gson.Gson
+import com.google.gson.JsonElement
+import game.Board
+import game.Conway
+import game.NDimensionalCoordinate
+import game.State
 import io.ktor.application.call
 import io.ktor.content.default
 import io.ktor.content.files
@@ -20,8 +25,22 @@ import java.io.File
 
 val GSON = Gson()
 
-fun mapToBoard(params: Parameters) {
+fun mapToBoard(params: Parameters) : Board {
+    val cells : MutableMap<NDimensionalCoordinate, State> = HashMap()
+    val json : JsonElement = GSON.toJsonTree(params)
+    val inner : JsonElement = json.asJsonObject["values"]
+    for (entry in inner.asJsonObject.entrySet()) {
+        val lst : List<Int> = entry.key.split(",").map { it.toInt() }
+        val coord = NDimensionalCoordinate(lst.size, lst)
+        val state = if (entry.value.asBoolean) State.ALIVE else State.DEAD
+        cells[coord] = state
+    }
+    return Board(cells)
+}
 
+fun boardToJson(b : Board) : String {
+    val newMap : Map<List<Int>, Boolean> = b.cells.entries.associate { it.key.coords to (it.value == State.ALIVE) }
+    return GSON.toJson(newMap)
 }
 
 fun startServer() {
@@ -33,10 +52,20 @@ fun startServer() {
             }
             post("/update") {
                 val params = call.receiveParameters()
-                mapToBoard(params)
-                val json = GSON.toJson(params)
-                println(json)
-                call.respond(json)
+                val b : Board = mapToBoard(params)
+                println(b.cells.size)
+                println("OLD")
+                println(b)
+                b.transform(Conway)
+                println("NEW")
+                println(b)
+//                println(GSON.toJsonTree(params).asJsonObject["values"])
+//                println(params.entries())
+//                val json = GSON.toJson(params)
+//                println(json)
+                val response = boardToJson(b)
+                println(response)
+                call.respond(response)
             }
             static ("game") {
                 staticRootFolder = File("src/main/resources")

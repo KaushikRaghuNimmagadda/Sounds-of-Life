@@ -18,7 +18,7 @@ class NDimensionalCoordinate(val numDimensions : Int, var coords : List<Int>) {
     fun maxDif(other : NDimensionalCoordinate) : Int {
         assert(numDimensions == other.numDimensions)
         var maxDif = 0
-        for (dim in 0 .. numDimensions) {
+        for (dim in 0 until numDimensions) {
             var difference = abs(getValAt(dim) - other.getValAt(dim))
             maxDif = if (difference > maxDif) difference else maxDif
         }
@@ -32,7 +32,7 @@ class NDimensionalCoordinate(val numDimensions : Int, var coords : List<Int>) {
         other as NDimensionalCoordinate
 
         if (numDimensions != other.numDimensions) return false
-        for (dim : Int in 0 .. numDimensions - 1){
+        for (dim : Int in 0 until numDimensions){
             if (other.getValAt(dim) != getValAt(dim)){
                 return false
             }
@@ -44,6 +44,10 @@ class NDimensionalCoordinate(val numDimensions : Int, var coords : List<Int>) {
         var result = numDimensions
         result = 31 * result + coords.hashCode()
         return result
+    }
+
+    override fun toString(): String {
+        return "NDimensionalCoordinate(numDimensions=$numDimensions, coords=$coords)"
     }
 }
 

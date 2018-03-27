@@ -63,4 +63,8 @@ class Board {
         }
         cells = newCells
     }
+
+    override fun toString(): String {
+        return "Board(cells=$cells, bound=$bound)"
+    }
 }

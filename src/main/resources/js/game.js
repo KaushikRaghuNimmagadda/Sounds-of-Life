@@ -84,14 +84,14 @@ $(document).ready(() => {
         // just makes an empty one? Turns out maps can't be serialized
         // to JSON.
         let m = buildMap();
-        let s = JSON.stringify(m);
-        // console.log(m);
-        // console.log(s);
-        $.post("/update", s, (responseJson) => {
+        console.log(Object.keys(m).length);
+        $.post("/update", m, (responseJson) => {
             responseJson = JSON.parse(responseJson);
-            // console.log(responseJson);
-            console.log(Object.keys(responseJson.values).length);
-            // console.log(typeof responseJson);
+            console.log(responseJson);
+            console.log(Object.keys(responseJson).length);
+            for(const key of Object.keys(responseJson)) {
+                drawCell(key[0], key[1], responseJson[key]);
+            }
             console.log("received and finished");
         });
     }
