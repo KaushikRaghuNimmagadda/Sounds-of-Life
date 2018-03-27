@@ -17,8 +17,7 @@ $(document).ready(() => {
         let col = Math.floor(event.offsetX / squareSize);
         console.log(row);
         console.log(col);
-        drawCell(row, col, Math.random() > 0.5);
-        isAlive(row, col);
+        drawCell(row, col, true);
     });
     // draws initial grid
     function drawGrid() {
@@ -83,6 +82,7 @@ $(document).ready(() => {
         // so buildMap produces the correct map but JSON.stringify
         // just makes an empty one? Turns out maps can't be serialized
         // to JSON.
+        let start_time = new Date().getTime();
         let m = buildMap();
         console.log(Object.keys(m).length);
         $.post("/update", m, (responseJson) => {
@@ -90,9 +90,13 @@ $(document).ready(() => {
             console.log(responseJson);
             console.log(Object.keys(responseJson).length);
             for(const key of Object.keys(responseJson)) {
-                drawCell(key[0], key[1], responseJson[key]);
+                // parse stringified key into array of ints
+                let arr = JSON.parse(key);
+                // fill in the cell
+                drawCell(parseInt(arr[0]), parseInt(arr[1]), responseJson[key]);
             }
             console.log("received and finished");
+            console.log(new Date().getTime() - start_time);
         });
     }
     drawGrid();
