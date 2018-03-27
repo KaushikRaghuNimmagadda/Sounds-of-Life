@@ -84,7 +84,9 @@ $(document).ready(() => {
         // to JSON.
         let start_time = new Date().getTime();
         let m = buildMap();
-        console.log(Object.keys(m).length);
+        let map_time = new Date().getTime();
+        console.log("time to build map: " + (map_time - start_time).toString());
+        // console.log(Object.keys(m).length);
         $.post("/update", m, (responseJson) => {
             responseJson = JSON.parse(responseJson);
             console.log(responseJson);
