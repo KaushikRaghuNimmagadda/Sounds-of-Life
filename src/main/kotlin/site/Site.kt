@@ -25,9 +25,10 @@ import kotlin.system.measureTimeMillis
 
 val GSON = Gson()
 
-fun mapToBoard(params: Parameters) : Board {
+fun stringToBoard(params: Parameters) : Board {
     val cells : MutableMap<NDimensionalCoordinate, State> = HashMap()
     val json : JsonElement = GSON.toJsonTree(params)
+    println(json)
     val inner : JsonElement = json.asJsonObject["values"]
     println("size of received map: " + inner.asJsonObject.entrySet().size)
     for (entry in inner.asJsonObject.entrySet()) {
@@ -37,6 +38,19 @@ fun mapToBoard(params: Parameters) : Board {
         cells[coord] = state
     }
     return Board(cells)
+}
+
+fun mapToBoard(params: Parameters) : Board {
+    var cells : Map<NDimensionalCoordinate, State> = HashMap()
+    val json : JsonElement = GSON.toJsonTree(params)
+    val inner : JsonElement = json.asJsonObject["values"]
+    for(entry in json.asJsonObject["values"].asJsonObject.entrySet()){
+        val map = GSON.fromJson<Map<String, Boolean>>(entry.key, Map::class.java)
+        cells = map.entries.associate {
+            val lst = it.key.split(",").map {it.toInt()}
+            NDimensionalCoordinate(lst.size, lst) to if(it.value) State.ALIVE else State.DEAD }
+    }
+    return Board(cells.toMutableMap())
 }
 
 fun boardToJson(b : Board) : String {
@@ -55,18 +69,8 @@ fun startServer() {
                 val elapsed = measureTimeMillis {
                 val params = call.receiveParameters()
                 val b : Board = mapToBoard(params)
-//                println(b.cells.size)
-//                println("OLD")
-//                println(b)
                 b.transform(Conway)
-//                println("NEW")
-//                println(b)
-//                println(GSON.toJsonTree(params).asJsonObject["values"])
-//                println(params.entries())
-//                val json = GSON.toJson(params)
-//                println(json)
                 val response = boardToJson(b)
-//                println(response)
                 call.respond(response)
                 }
                 println(elapsed)

@@ -33,6 +33,7 @@ $(document).ready(() => {
     // sets up initial grid object
     function initGrid() {
         let grid = {};
+        // let grid = new Map();
         for(let r = 0; r < rows; r ++) {
             for(let c = 0; c < cols; c ++) {
                 grid[[r, c]] = false;
@@ -108,10 +109,11 @@ $(document).ready(() => {
         let start_time = new Date().getTime();
         // let m = buildMap();
         let m = cells;
+        let str_m = JSON.stringify(m);
         let map_time = new Date().getTime();
         console.log("time to build map: " + (map_time - start_time).toString());
         console.log("size of posted map: " + Object.keys(m).length);
-        $.post("/update", m, (responseJson) => {
+        $.post("/update", str_m, (responseJson) => {
             responseJson = JSON.parse(responseJson);
             // console.log(responseJson);
             console.log("size of response: " + Object.keys(responseJson).length);
