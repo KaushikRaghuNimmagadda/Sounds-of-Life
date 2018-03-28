@@ -3,8 +3,15 @@ $(document).ready(() => {
     let colors = {};
     colors[true] = "#00FF00";
     colors[false] = "#000000";
+    // set button onclick
     let $button = $("#button");
     $button.click(updateBoard);
+    // bind enter to also update board
+    $(document).onkeypress = function (event) {
+       if (event.keyCode == 13) {
+           updateBoard()
+       }
+    };
     const squareSize = 10;
     let $canvas = $("#canvas");
     let canvas = document.getElementById("canvas");
@@ -21,7 +28,7 @@ $(document).ready(() => {
         let col = Math.floor(event.offsetX / squareSize);
         console.log(row);
         console.log(col);
-        drawCell(row, col, true);
+        drawCell(row, col, !cells[[row, col]]);
     });
     // sets up initial grid object
     function initGrid() {
@@ -103,11 +110,11 @@ $(document).ready(() => {
         let m = cells;
         let map_time = new Date().getTime();
         console.log("time to build map: " + (map_time - start_time).toString());
-        // console.log(Object.keys(m).length);
+        console.log("size of posted map: " + Object.keys(m).length);
         $.post("/update", m, (responseJson) => {
             responseJson = JSON.parse(responseJson);
-            console.log(responseJson);
-            console.log(Object.keys(responseJson).length);
+            // console.log(responseJson);
+            console.log("size of response: " + Object.keys(responseJson).length);
             let draw_time = new Date().getTime();
             for(const key of Object.keys(responseJson)) {
                 // parse stringified key into array of ints

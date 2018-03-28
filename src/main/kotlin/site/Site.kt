@@ -1,7 +1,6 @@
 package site
 
-import com.google.gson.Gson
-import com.google.gson.JsonElement
+import com.google.gson.Gson import com.google.gson.JsonElement
 import game.Board
 import game.Conway
 import game.NDimensionalCoordinate
@@ -30,6 +29,7 @@ fun mapToBoard(params: Parameters) : Board {
     val cells : MutableMap<NDimensionalCoordinate, State> = HashMap()
     val json : JsonElement = GSON.toJsonTree(params)
     val inner : JsonElement = json.asJsonObject["values"]
+    println("size of received map: " + inner.asJsonObject.entrySet().size)
     for (entry in inner.asJsonObject.entrySet()) {
         val lst : List<Int> = entry.key.split(",").map { it.toInt() }
         val coord = NDimensionalCoordinate(lst.size, lst)
