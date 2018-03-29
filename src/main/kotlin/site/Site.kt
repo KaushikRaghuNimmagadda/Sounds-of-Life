@@ -42,14 +42,16 @@ fun stringToBoard(params: Parameters) : Board {
 
 fun mapToBoard(params: Parameters) : Board {
     var cells : Map<NDimensionalCoordinate, State> = HashMap()
+    val time = measureTimeMillis {
     val json : JsonElement = GSON.toJsonTree(params)
-    val inner : JsonElement = json.asJsonObject["values"]
     for(entry in json.asJsonObject["values"].asJsonObject.entrySet()){
         val map = GSON.fromJson<Map<String, Boolean>>(entry.key, Map::class.java)
         cells = map.entries.associate {
             val lst = it.key.split(",").map {it.toInt()}
             NDimensionalCoordinate(lst.size, lst) to if(it.value) State.ALIVE else State.DEAD }
     }
+    }
+    println("TIME TO BOARD: " + time)
     return Board(cells.toMutableMap())
 }
 
@@ -69,7 +71,11 @@ fun startServer() {
                 val elapsed = measureTimeMillis {
                 val params = call.receiveParameters()
                 val b : Board = mapToBoard(params)
-                b.transform(Conway)
+                    val transformTime = measureTimeMillis {
+                        // alright this is taking the lion's share of the time... MULTITHREAD
+                        b.transform(Conway)
+                    }
+                    println("TIME TO TRANSFORM: " + transformTime)
                 val response = boardToJson(b)
                 call.respond(response)
                 }

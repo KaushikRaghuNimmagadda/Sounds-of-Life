@@ -57,11 +57,12 @@ class Board {
     fun transform(t : BoardTransform) {
         // can't modify existing map b/c need to refer to the unaltered
         // original board to determine transformations
-        val newCells : MutableMap<NDimensionalCoordinate, State> = HashMap()
-        for (k : NDimensionalCoordinate in cells.keys) {
-            newCells[k] = t.update(k, this)
-        }
-        cells = newCells
+//        val newCells : MutableMap<NDimensionalCoordinate, State> = HashMap()
+//        for (k : NDimensionalCoordinate in cells.keys) {
+//            newCells[k] = t.update(k, this)
+//        }
+        cells = cells.entries.associate { it.key to t.update(it.key, this) }.toMutableMap()
+//        cells = newCells
     }
 
     override fun toString(): String {
