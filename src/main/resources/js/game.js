@@ -102,13 +102,50 @@ $(document).ready(() => {
         return m;
     }
 
+
+    // gets neighbors of row, col as an array of arrays
+    function getNeighbors(row, col) {
+        let arr = [];
+        for(let i = -1; i <= 1; i ++) {
+            for(let j = -1; j <= 1; j++) {
+                arr.push([row + i, col + j]);
+            }
+        }
+        return arr
+    }
+
+    // takes in object containing the cells->state and produces an object containing only the
+    // mappings that the server needs to know about (the ones it might update). These are defined
+    // as any live cell and any cell that's a neighbor of a live cell.
+    function collectImportant(cells) {
+        let important = {};
+        for(let r = 0; r < rows; r ++) {
+            for(let c = 0; c < cols; c ++){
+                // iterate over possible neighbors
+                for(const neighbor of getNeighbors(r, c)) {
+                    // if the neighbor was alive, the cell is important so we add it.
+                    if(cells[neighbor]) {
+                        important[[r, c]] = true;
+                        break;
+                    }
+                }
+            }
+        }
+        // now we add the bound coordinate to the map
+        if([rows - 1, cols - 1] in important) {
+            important[[rows - 1, cols - 1]] = isAlive(rows, cols);
+        }
+        return important
+    }
+
     function updateBoard() {
         // so buildMap produces the correct map but JSON.stringify
         // just makes an empty one? Turns out maps can't be serialized
         // to JSON.
         let start_time = new Date().getTime();
         // let m = buildMap();
-        let m = cells;
+        // let m = cells;
+        let m = collectImportant(cells);
         let str_m = JSON.stringify(m);
         let map_time = new Date().getTime();
         console.log("time to build map: " + (map_time - start_time).toString());
@@ -118,13 +155,22 @@ $(document).ready(() => {
             // console.log(responseJson);
             console.log("size of response: " + Object.keys(responseJson).length);
             let draw_time = new Date().getTime();
-            for(const key of Object.keys(responseJson)) {
-                // parse stringified key into array of ints
-                let arr = JSON.parse(key);
-                // fill in the cell
-                // note that updating our cell map is handled by drawCell
-                drawCell(parseInt(arr[0]), parseInt(arr[1]), responseJson[key]);
+            for(let r = 0; r < rows; r ++) {
+                for(let c = 0; c < cols; c ++) {
+                    if([r, c] in responseJson) {
+                        drawCell(r, c, true);
+                    } else {
+                        drawCell(r, c, false);
+                    }
+                }
             }
+            // for(const key of Object.keys(responseJson)) {
+            //     // parse stringified key into array of ints
+            //     let arr = JSON.parse(key);
+            //     // fill in the cell
+            //     // note that updating our cell map is handled by drawCell
+            //     drawCell(parseInt(arr[0]), parseInt(arr[1]), responseJson[key]);
+            // }
             console.log("received and finished");
             console.log("total time to draw: " + (new Date().getTime() - draw_time).toString());
             console.log("total time to post: " + (new Date().getTime() - start_time).toString());

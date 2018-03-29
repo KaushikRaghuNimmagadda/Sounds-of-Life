@@ -34,7 +34,6 @@ fun <T, K, V> Sequence<T>.passociate(
 }
 
 
-
 class Board {
     // mapping
     var cells : MutableMap<NDimensionalCoordinate, State> = HashMap()
@@ -96,6 +95,15 @@ class Board {
 //        }
         // using parallel version of associate for performance improvement
         cells = cells.entries.asSequence().passociate { Pair(it.key, t.update(it.key, this)) }.toMutableMap()
+    }
+
+    // function to check if a coordinate is on the board
+    fun onBoard(coord : NDimensionalCoordinate) : Boolean {
+        assert(coord.numDimensions == bound.numDimensions)
+        return (0 until coord.numDimensions).all {
+            val coordV = coord.getValAt(it)
+            0 <= coordV && coordV <= bound.getValAt(it)
+        }
     }
 
     override fun toString(): String {
