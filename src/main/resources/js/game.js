@@ -22,7 +22,6 @@ $(document).ready(() => {
 
     // map for cells
     let cells = initGrid();
-
     $canvas.click((event) => {
         let row = Math.floor(event.offsetY / squareSize);
         let col = Math.floor(event.offsetX / squareSize);
@@ -66,7 +65,6 @@ $(document).ready(() => {
         ctx.fillStyle = colors[alive];
         // adding 1 and subtracting 1 to keep the grid lines on the canvas
         ctx.fillRect(col * squareSize + 1, row * squareSize + 1, squareSize - 1, squareSize - 1);
-        // update cell states object
         cells[[row, col]] = alive;
     }
 
@@ -124,7 +122,7 @@ $(document).ready(() => {
                 // iterate over possible neighbors
                 for(const neighbor of getNeighbors(r, c)) {
                     // if the neighbor was alive, the cell is important so we add it.
-                    if(cells[neighbor]) {
+                    if(neighbor in cells && cells[neighbor]) {
                         important[[r, c]] = true;
                         break;
                     }
@@ -132,7 +130,7 @@ $(document).ready(() => {
             }
         }
         // now we add the bound coordinate to the map
-        if([rows - 1, cols - 1] in important) {
+        if(!([rows - 1, cols - 1] in important)) {
             important[[rows - 1, cols - 1]] = isAlive(rows, cols);
         }
         return important
