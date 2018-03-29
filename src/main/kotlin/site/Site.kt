@@ -71,10 +71,14 @@ fun startServer() {
                 val elapsed = measureTimeMillis {
                 val params = call.receiveParameters()
                 val b : Board = mapToBoard(params)
+                    println("ORIGINAL")
+                    println(b)
                     val transformTime = measureTimeMillis {
                         // alright this is taking the lion's share of the time... MULTITHREAD
                         b.transform(Conway)
                     }
+                    println("TRANSFORMED")
+                    println(b)
                     println("TIME TO TRANSFORM: " + transformTime)
                 val response = boardToJson(b)
                 call.respond(response)

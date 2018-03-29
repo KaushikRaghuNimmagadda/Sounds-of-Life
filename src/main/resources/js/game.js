@@ -56,6 +56,12 @@ $(document).ready(() => {
         }
         ctx.strokeStyle = "grey";
         ctx.stroke();
+        // draw initial board where everything is dead
+        for(let r = 0; r < rows; r ++) {
+            for(let c = 0; c < cols; c ++) {
+                drawCell(r, c, false);
+            }
+        }
     }
 
     /*
@@ -123,7 +129,7 @@ $(document).ready(() => {
                 for(const neighbor of getNeighbors(r, c)) {
                     // if the neighbor was alive, the cell is important so we add it.
                     if(neighbor in cells && cells[neighbor]) {
-                        important[[r, c]] = true;
+                        important[[r, c]] = cells[[r, c]];
                         break;
                     }
                 }
@@ -150,25 +156,17 @@ $(document).ready(() => {
         console.log("size of posted map: " + Object.keys(m).length);
         $.post("/update", str_m, (responseJson) => {
             responseJson = JSON.parse(responseJson);
-            // console.log(responseJson);
+            console.log(responseJson);
+            console.log(Object.keys(responseJson));
             console.log("size of response: " + Object.keys(responseJson).length);
             let draw_time = new Date().getTime();
-            for(let r = 0; r < rows; r ++) {
-                for(let c = 0; c < cols; c ++) {
-                    if([r, c] in responseJson) {
-                        drawCell(r, c, true);
-                    } else {
-                        drawCell(r, c, false);
-                    }
-                }
+            for(const key of Object.keys(responseJson)) {
+                // parse stringified key into array of ints
+                let arr = JSON.parse(key);
+                // fill in the cell
+                // note that updating our cell map is handled by drawCell
+                drawCell(parseInt(arr[0]), parseInt(arr[1]), responseJson[key]);
             }
-            // for(const key of Object.keys(responseJson)) {
-            //     // parse stringified key into array of ints
-            //     let arr = JSON.parse(key);
-            //     // fill in the cell
-            //     // note that updating our cell map is handled by drawCell
-            //     drawCell(parseInt(arr[0]), parseInt(arr[1]), responseJson[key]);
-            // }
             console.log("received and finished");
             console.log("total time to draw: " + (new Date().getTime() - draw_time).toString());
             console.log("total time to post: " + (new Date().getTime() - start_time).toString());
