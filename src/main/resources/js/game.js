@@ -29,6 +29,35 @@ $(document).ready(() => {
         console.log(col);
         drawCell(row, col, !cells[[row, col]]);
     });
+
+    // function takes in data to send to the server and returns the settings
+    // object to pass to jquery post to make a post request.
+    function producePostParams(data) {
+        let settings = {};
+        // set data
+        settings["data"] = data;
+        // want a synchronous request
+        settings["async"] = false;
+        // post url
+        settings["url"] = "/update";
+        // set success function
+        settings["success"] = (responseJson) => {
+            responseJson = JSON.parse(responseJson);
+            console.log("size of response: " + Object.keys(responseJson).length);
+            let draw_time = new Date().getTime();
+            for(const key of Object.keys(responseJson)) {
+                // parse stringified key into array of ints
+                let arr = JSON.parse(key);
+                // fill in the cell
+                // note that updating our cell map is handled by drawCell
+                drawCell(parseInt(arr[0]), parseInt(arr[1]), responseJson[key]);
+            }
+            console.log("received and finished");
+        };
+        // we don't have to set the request type b/c we're calling this w/$.post
+        return settings
+    }
+
     // sets up initial grid object
     function initGrid() {
         let grid = {};
@@ -94,19 +123,6 @@ $(document).ready(() => {
         return colorString === "#00FF00";
     }
 
-    // builds map of current cell states to send to backend
-    function buildMap() {
-        // let m = new Map();
-        let m = {};
-        for(let row = 0; row < rows; row ++) {
-            for(let col = 0; col < cols; col ++) {
-                m[[row, col]] = isAlive(row, col);
-            }
-        }
-        return m;
-    }
-
-
     // gets neighbors of row, col as an array of arrays
     function getNeighbors(row, col) {
         let arr = [];
@@ -143,34 +159,27 @@ $(document).ready(() => {
     }
 
     function updateBoard() {
-        // so buildMap produces the correct map but JSON.stringify
-        // just makes an empty one? Turns out maps can't be serialized
-        // to JSON.
         let start_time = new Date().getTime();
-        // let m = buildMap();
-        // let m = cells;
         let m = collectImportant(cells);
         let str_m = JSON.stringify(m);
-        let map_time = new Date().getTime();
-        console.log("time to build map: " + (map_time - start_time).toString());
         console.log("size of posted map: " + Object.keys(m).length);
-        $.post("/update", str_m, (responseJson) => {
-            responseJson = JSON.parse(responseJson);
-            console.log(responseJson);
-            console.log(Object.keys(responseJson));
-            console.log("size of response: " + Object.keys(responseJson).length);
-            let draw_time = new Date().getTime();
-            for(const key of Object.keys(responseJson)) {
-                // parse stringified key into array of ints
-                let arr = JSON.parse(key);
-                // fill in the cell
-                // note that updating our cell map is handled by drawCell
-                drawCell(parseInt(arr[0]), parseInt(arr[1]), responseJson[key]);
-            }
-            console.log("received and finished");
-            console.log("total time to draw: " + (new Date().getTime() - draw_time).toString());
-            console.log("total time to post: " + (new Date().getTime() - start_time).toString());
-        });
+        $.post(producePostParams(str_m));
+        // $.post("/update", str_m, (responseJson) => {
+        //     responseJson = JSON.parse(responseJson);
+        //     console.log("size of response: " + Object.keys(responseJson).length);
+        //     let draw_time = new Date().getTime();
+        //     for(const key of Object.keys(responseJson)) {
+        //         // parse stringified key into array of ints
+        //         let arr = JSON.parse(key);
+        //         // fill in the cell
+        //         // note that updating our cell map is handled by drawCell
+        //         drawCell(parseInt(arr[0]), parseInt(arr[1]), responseJson[key]);
+        //     }
+        //     console.log("received and finished");
+        //     console.log("total time to draw: " + (new Date().getTime() - draw_time).toString());
+        //     console.log("total time to post: " + (new Date().getTime() - start_time).toString());
+        // });
     }
+    // draw initial grid
     drawGrid();
 });
