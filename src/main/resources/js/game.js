@@ -3,15 +3,26 @@ $(document).ready(() => {
     let colors = {};
     colors[true] = "#00FF00";
     colors[false] = "#000000";
+    // set run flag
+    let run = true;
     // set button onclick
     let $button = $("#button");
-    $button.click(updateBoard);
-    // bind enter to also update board
+    $button.click(() => {
+        if(!run) {
+            run = true;
+            runLoop();
+        } else {
+            run = !run;
+        }
+    });
+    // bind enter to update board
     $(document).onkeypress = function (event) {
        if (event.keyCode == 13) {
            updateBoard()
        }
     };
+
+
     const squareSize = 10;
     let $canvas = $("#canvas");
     let canvas = document.getElementById("canvas");
@@ -180,6 +191,14 @@ $(document).ready(() => {
         //     console.log("total time to post: " + (new Date().getTime() - start_time).toString());
         // });
     }
+    function runLoop() {
+        if(!run) {
+            return
+        }
+        updateBoard();
+        setTimeout(runLoop, 0);
+    }
     // draw initial grid
     drawGrid();
+    runLoop();
 });
