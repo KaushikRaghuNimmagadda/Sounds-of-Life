@@ -1,6 +1,39 @@
 package game
 
 import java.util.*
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+
+fun <T, R> Collection<T>.pmap(
+        numThreads : Int = Runtime.getRuntime().availableProcessors() - 2,
+        exec : ExecutorService = Executors.newFixedThreadPool(numThreads),
+        transform : (T) -> R) : List<R> {
+    val dest = Collections.synchronizedList(ArrayList<R>(this.size))
+    for(item in this) {
+        exec.submit {dest.add(transform(item)) }
+    }
+    exec.shutdown()
+    exec.awaitTermination(1, TimeUnit.DAYS)
+    return ArrayList<R>(dest)
+}
+
+fun <T, K, V> Sequence<T>.passociate(
+        numThreads : Int = 6,
+        exec : ExecutorService = Executors.newFixedThreadPool(numThreads),
+        transform : (T) -> Pair<K, V>) : Map<K, V> {
+    val dest = Collections.synchronizedMap(HashMap<K, V>())
+    for(item in this) {
+        exec.submit { dest += transform(item) }
+    }
+    exec.shutdown()
+    exec.awaitTermination(1, TimeUnit.DAYS)
+    return dest
+}
+
+
 
 class Board {
     // mapping
@@ -57,12 +90,12 @@ class Board {
     fun transform(t : BoardTransform) {
         // can't modify existing map b/c need to refer to the unaltered
         // original board to determine transformations
-//        val newCells : MutableMap<NDimensionalCoordinate, State> = HashMap()
-//        for (k : NDimensionalCoordinate in cells.keys) {
-//            newCells[k] = t.update(k, this)
+//        val newEntries = cells.entries.pmap { Pair(it.key, t.update(it.key, this)) }
+//        for(pair in newEntries) {
+//            cells[pair.first] = pair.second
 //        }
-        cells = cells.entries.associate { it.key to t.update(it.key, this) }.toMutableMap()
-//        cells = newCells
+        // using parallel version of associate for performance improvement
+        cells = cells.entries.asSequence().passociate { Pair(it.key, t.update(it.key, this)) }.toMutableMap()
     }
 
     override fun toString(): String {
