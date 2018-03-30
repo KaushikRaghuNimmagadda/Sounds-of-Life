@@ -4,16 +4,21 @@ $(document).ready(() => {
     colors[true] = "#00FF00";
     colors[false] = "#000000";
     // set run flag
-    let run = true;
+    let run = false;
     // set button onclick
-    let $button = $("#button");
-    $button.click(() => {
+    let $runButton = $("#run");
+    $runButton.click(() => {
         if(!run) {
             run = true;
             runLoop();
         } else {
             run = !run;
         }
+    });
+    let $clearButton = $("#clear");
+    $clearButton.click(() => {
+        run = false;
+        drawDeadBoard();
     });
     // bind enter to update board
     $(document).onkeypress = function (event) {
@@ -34,6 +39,8 @@ $(document).ready(() => {
     // map for cells
     let cells = initGrid();
     $canvas.click((event) => {
+        // set run to false so you can add cells by clicking while the board is running
+        run = false;
         let row = Math.floor(event.offsetY / squareSize);
         let col = Math.floor(event.offsetX / squareSize);
         console.log(row);
@@ -41,6 +48,22 @@ $(document).ready(() => {
         drawCell(row, col, !cells[[row, col]]);
     });
 
+    // functions for incrementing the generation counter
+    function setGeneration(newGen) {
+        let generation = document.getElementById("generation");
+        generation.innerHTML = newGen;
+    }
+
+    function incrementGeneration() {
+        let generation = document.getElementById("generation");
+        let curGen = parseInt(generation.innerHTML);
+        curGen ++;
+        setGeneration(curGen);
+    }
+
+    function resetGeneration() {
+        setGeneration(0);
+    }
     // function takes in data to send to the server and returns the settings
     // object to pass to jquery post to make a post request.
     function producePostParams(data) {
@@ -80,7 +103,16 @@ $(document).ready(() => {
         }
         return grid;
     }
-    // draws initial grid
+    // draws all cells as dead
+    function drawDeadBoard() {
+        // draw initial board where everything is dead
+        for(let r = 0; r < rows; r ++) {
+            for(let c = 0; c < cols; c ++) {
+                drawCell(r, c, false);
+            }
+        }
+    }
+    // draws grid
     function drawGrid() {
         let height = canvas.height;
         let width = canvas.width;
@@ -96,12 +128,7 @@ $(document).ready(() => {
         }
         ctx.strokeStyle = "grey";
         ctx.stroke();
-        // draw initial board where everything is dead
-        for(let r = 0; r < rows; r ++) {
-            for(let c = 0; c < cols; c ++) {
-                drawCell(r, c, false);
-            }
-        }
+        drawDeadBoard();
     }
 
     /*
@@ -193,12 +220,13 @@ $(document).ready(() => {
     }
     function runLoop() {
         if(!run) {
+            resetGeneration();
             return
         }
         updateBoard();
+        incrementGeneration();
         setTimeout(runLoop, 0);
     }
     // draw initial grid
     drawGrid();
-    runLoop();
 });

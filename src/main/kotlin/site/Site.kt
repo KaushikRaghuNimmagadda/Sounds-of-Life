@@ -1,10 +1,7 @@
 package site
 
 import com.google.gson.Gson import com.google.gson.JsonElement
-import game.Board
-import game.Conway
-import game.NDimensionalCoordinate
-import game.State
+import game.*
 import io.ktor.application.call
 import io.ktor.content.default
 import io.ktor.content.files
@@ -12,7 +9,6 @@ import io.ktor.content.static
 import io.ktor.content.staticRootFolder
 import io.ktor.http.ContentType
 import io.ktor.http.Parameters
-import io.ktor.request.receive
 import io.ktor.request.receiveParameters
 import io.ktor.response.respond
 import io.ktor.response.respondText
@@ -72,7 +68,6 @@ fun startServer() {
                 val params = call.receiveParameters()
                 val b : Board = mapToBoard(params)
                     val transformTime = measureTimeMillis {
-                        // alright this is taking the lion's share of the time... MULTITHREAD
                         b.transform(Conway)
                     }
                     println("TIME TO TRANSFORM: " + transformTime)

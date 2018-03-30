@@ -19,7 +19,7 @@ class NDimensionalCoordinate(val numDimensions : Int, var coords : List<Int>) {
         assert(numDimensions == other.numDimensions)
         var maxDif = 0
         for (dim in 0 until numDimensions) {
-            var difference = abs(getValAt(dim) - other.getValAt(dim))
+            val difference = abs(getValAt(dim) - other.getValAt(dim))
             maxDif = if (difference > maxDif) difference else maxDif
         }
         return maxDif
