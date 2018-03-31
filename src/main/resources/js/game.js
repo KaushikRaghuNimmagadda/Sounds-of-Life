@@ -5,7 +5,18 @@ $(document).ready(() => {
     colors[false] = "#000000";
     // set run flag
     let run = false;
-    // set button onclick
+
+    const squareSize = 10;
+    let $canvas = $("#canvas");
+    let canvas = document.getElementById("canvas");
+    let ctx = $canvas[0].getContext("2d");
+    // number of rows and columns on our board
+    let rows = canvas.height / squareSize;
+    let cols = canvas.width / squareSize;
+    // map for cells
+    let cells = initGrid();
+
+    // set run button
     let $runButton = $("#run");
     $runButton.click(() => {
         if(!run) {
@@ -15,10 +26,17 @@ $(document).ready(() => {
             run = !run;
         }
     });
+    // set clear button
     let $clearButton = $("#clear");
     $clearButton.click(() => {
         run = false;
         drawDeadBoard();
+    });
+    // set sound button
+    let $soundButton= $("#sound");
+    $soundButton.click(() => {
+        run = false;
+        playSound(cells);
     });
     // bind enter to update board
     $(document).onkeypress = function (event) {
@@ -27,17 +45,6 @@ $(document).ready(() => {
        }
     };
 
-
-    const squareSize = 10;
-    let $canvas = $("#canvas");
-    let canvas = document.getElementById("canvas");
-    let ctx = $canvas[0].getContext("2d");
-    // number of rows and columns on our board
-    let rows = canvas.height / squareSize;
-    let cols = canvas.width / squareSize;
-
-    // map for cells
-    let cells = initGrid();
     $canvas.click((event) => {
         // set run to false so you can add cells by clicking while the board is running
         run = false;

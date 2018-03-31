@@ -1,7 +1,8 @@
-// consumes a board and it's dimensions, plays a sound!
-function playSound(rows, cols, board) {
-    // since we are passing in the dimensions, we can pass the sparse board in
-    let VCO = T("saw")
+// consumes a board, plays a sound!
+function playSound(board) {
+    console.log("playing sound");
+    let VCO = T("saw", {mul: 0.2});
+    let VCF = T("lpf", {cutoff: 1600, Q:10}, VCO).play();
 }
 
 /**
