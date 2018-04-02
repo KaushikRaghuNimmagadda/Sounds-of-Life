@@ -6,6 +6,9 @@ $(document).ready(() => {
     // set run flag
     let run = false;
 
+    // set sound flag
+    let sound = false;
+
     const squareSize = 10;
     let $canvas = $("#canvas");
     let canvas = document.getElementById("canvas");
@@ -33,10 +36,16 @@ $(document).ready(() => {
         drawDeadBoard();
     });
     // set sound button
-    let $soundButton= $("#sound");
+    let $soundButton = $("#sound");
     $soundButton.click(() => {
         run = false;
         playSound(cells, rows, cols);
+    });
+
+    // set checkbox for sound
+    let $soundCheckBox = $("#soundCheck");
+    $soundCheckBox.click(() => {
+        sound = !sound;
     });
 
     $canvas.click((event) => {
@@ -224,7 +233,9 @@ $(document).ready(() => {
         }
         updateBoard();
         incrementGeneration();
-        playSound(cells, rows, cols);
+        if(sound) {
+            playSound(cells, rows, cols);
+        }
         setTimeout(runLoop, 0);
     }
     // draw initial grid
