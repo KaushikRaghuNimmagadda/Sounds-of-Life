@@ -1,6 +1,7 @@
 let notes = produceNoteArr();
 let sd = produceSoundDict();
 
+let synth = new Tone.Synth().toMaster();
 // consumes a board, plays a sound!
 function playSound(board, rows, cols) {
     console.log("playing sound");
@@ -11,13 +12,12 @@ function playSound(board, rows, cols) {
         }
     }
     let coverage = alive / (rows * cols);
-    let synth = new Tone.Synth().toMaster();
     console.log(coverage);
     let note = getNote(coverage);
     console.log(note);
     // synth.triggerAttackRelease("A#4", "8n");
     // synth.triggerAttackRelease(note, "8n");
-    synth.triggerAttackRelease(note, "0.01");
+    synth.triggerAttackRelease(note, "8n", "+0.1");
 }
 
 function produceSoundDict() {
