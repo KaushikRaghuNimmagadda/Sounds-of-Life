@@ -16,29 +16,12 @@ import io.ktor.routing.*
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.*
 import java.io.File
-import kotlin.system.measureTimeMillis
 
 
 val GSON = Gson()
 
-fun stringToBoard(params: Parameters) : Board {
-    val cells : MutableMap<NDimensionalCoordinate, State> = HashMap()
-    val json : JsonElement = GSON.toJsonTree(params)
-    println(json)
-    val inner : JsonElement = json.asJsonObject["values"]
-    println("size of received map: " + inner.asJsonObject.entrySet().size)
-    for (entry in inner.asJsonObject.entrySet()) {
-        val lst : List<Int> = entry.key.split(",").map { it.toInt() }
-        val coord = NDimensionalCoordinate(lst.size, lst)
-        val state = if (entry.value.asBoolean) State.ALIVE else State.DEAD
-        cells[coord] = state
-    }
-    return Board(cells)
-}
-
 fun mapToBoard(params: Parameters) : Board {
     var cells : Map<NDimensionalCoordinate, State> = HashMap()
-    val time = measureTimeMillis {
     val json : JsonElement = GSON.toJsonTree(params)
     for(entry in json.asJsonObject["values"].asJsonObject.entrySet()){
         val map = GSON.fromJson<Map<String, Boolean>>(entry.key, Map::class.java)
@@ -46,8 +29,6 @@ fun mapToBoard(params: Parameters) : Board {
             val lst = it.key.split(",").map {it.toInt()}
             NDimensionalCoordinate(lst.size, lst) to if(it.value) State.ALIVE else State.DEAD }
     }
-    }
-    println("TIME TO BOARD: " + time)
     return Board(cells.toMutableMap())
 }
 
@@ -64,17 +45,11 @@ fun startServer() {
                 call.respondText("Hello!", ContentType.Text.Html)
             }
             post("/update") {
-                val elapsed = measureTimeMillis {
                 val params = call.receiveParameters()
                 val b : Board = mapToBoard(params)
-                    val transformTime = measureTimeMillis {
-                        b.transform(Conway)
-                    }
-                    println("TIME TO TRANSFORM: " + transformTime)
+                b.transform(Conway)
                 val response = boardToJson(b)
                 call.respond(response)
-                }
-                println(elapsed)
             }
             static ("game") {
                 staticRootFolder = File("src/main/resources")

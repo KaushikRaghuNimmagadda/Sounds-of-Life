@@ -36,14 +36,8 @@ $(document).ready(() => {
     let $soundButton= $("#sound");
     $soundButton.click(() => {
         run = false;
-        playSound(cells);
+        playSound(cells, rows, cols);
     });
-    // bind enter to update board
-    $(document).onkeypress = function (event) {
-       if (event.keyCode == 13) {
-           updateBoard()
-       }
-    };
 
     $canvas.click((event) => {
         // set run to false so you can add cells by clicking while the board is running
@@ -84,8 +78,7 @@ $(document).ready(() => {
         // set success function
         settings["success"] = (responseJson) => {
             responseJson = JSON.parse(responseJson);
-            console.log("size of response: " + Object.keys(responseJson).length);
-            let draw_time = new Date().getTime();
+            // console.log("size of response: " + Object.keys(responseJson).length);
             for(const key of Object.keys(responseJson)) {
                 // parse stringified key into array of ints
                 let arr = JSON.parse(key);
@@ -93,7 +86,6 @@ $(document).ready(() => {
                 // note that updating our cell map is handled by drawCell
                 drawCell(parseInt(arr[0]), parseInt(arr[1]), responseJson[key]);
             }
-            console.log("received and finished");
         };
         // we don't have to set the request type b/c we're calling this w/$.post
         return settings
@@ -207,7 +199,7 @@ $(document).ready(() => {
         let start_time = new Date().getTime();
         let m = collectImportant(cells);
         let str_m = JSON.stringify(m);
-        console.log("size of posted map: " + Object.keys(m).length);
+        // console.log("size of posted map: " + Object.keys(m).length);
         $.post(producePostParams(str_m));
         // $.post("/update", str_m, (responseJson) => {
         //     responseJson = JSON.parse(responseJson);
@@ -232,6 +224,7 @@ $(document).ready(() => {
         }
         updateBoard();
         incrementGeneration();
+        playSound(cells, rows, cols);
         setTimeout(runLoop, 0);
     }
     // draw initial grid
