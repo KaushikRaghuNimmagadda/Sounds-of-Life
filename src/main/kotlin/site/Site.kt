@@ -37,8 +37,8 @@ fun boardToJson(b : Board) : String {
     return GSON.toJson(newMap)
 }
 
-fun startServer() {
-    embeddedServer(Netty, 4567) {
+fun startServer(port : Int) {
+    embeddedServer(Netty, port) {
         routing {
             // set up all routes
             get("/") {

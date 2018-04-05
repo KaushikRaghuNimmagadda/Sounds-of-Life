@@ -1,29 +1,41 @@
+/**
+ * Ideas for how this will determine sound:
+ * Cell frequencies
+ * Cell positions
+ * Cell structures (i.e. size of clusters, shape of clusters, etc.)
+ */
+
+/**
+ * Ideas for how sound can change
+ * Notes
+ * Durations
+ * Combinations of notes/have multiple notes played vs. 1 note played
+ */
+
 let notes = produceNoteArr();
 let sd = produceSoundDict();
 
-let synth = new Tone.Synth().toMaster();
+let synth = new Tone.Synth();
+
+let env = [];
+let osc = [];
+initEnvAndOsc();
+
 // consumes a board, plays a sound!
 function playSound(board, rows, cols) {
     console.log("playing sound");
-    let alive = 0;
-    for(const key of Object.keys(board)) {
-        if(board[key]) {
-            alive ++;
-        }
-    }
-    let coverage = alive / (rows * cols);
+    let coverage = getCoverage(board, rows, cols);
     console.log(coverage);
     let note = getNote(coverage);
     console.log(note);
-    // synth.triggerAttackRelease("A#4", "8n");
-    // synth.triggerAttackRelease(note, "8n");
-    synth.triggerAttackRelease(note, "8n", "+0.1");
+    synth.toMaster().triggerAttackRelease(note, "8n", "+0.1");
 }
 
 function produceSoundDict() {
     let d = new Map();
-    for(let i = 0; i < 48; i ++) {
-        d[i/48] = notes[i%12] + "4";
+    let num_intervals = 192 * 2;
+    for(let i = 0; i < num_intervals; i ++) {
+        d[i/num_intervals] = notes[i%notes.length] + "4";
     }
     return d
 }
@@ -45,6 +57,15 @@ function produceNoteArr() {
     return arr
 }
 
+// produces array of envelopes
+function initEnvAndOsc() {
+    for(let i = 0; i < 10; i ++) {
+        osc[i] = new Tone.Oscillator();
+        env[i] = new Tone.Envelope();
+        env[i].connect(osc[i].output.gain);
+    }
+}
+
 // given a coverage percentage calculates the note to play.
 function getNote(coverage) {
     console.log(sd);
@@ -56,17 +77,3 @@ function getNote(coverage) {
     }
     return sd[sorted_keys.length - 1];
 }
-
-/**
- * Ideas for how this will determine sound:
- * Cell frequencies
- * Cell positions
- * Cell structures (i.e. size of clusters, shape of clusters, etc.)
- */
-
-/**
- * Ideas for how sound can change
- * Notes
- * Durations
- * Combinations of notes/have multiple notes played vs. 1 note played
- */

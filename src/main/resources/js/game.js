@@ -236,7 +236,8 @@ $(document).ready(() => {
         if(sound) {
             playSound(cells, rows, cols);
         }
-        setTimeout(runLoop, 0);
+        console.log("NUM CLUSTERS: " + getNumClusters(cells, rows, cols));
+        setTimeout(runLoop, 2);
     }
     // draw initial grid
     drawGrid();
