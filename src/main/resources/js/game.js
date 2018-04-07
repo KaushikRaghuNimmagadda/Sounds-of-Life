@@ -1,4 +1,6 @@
 $(document).ready(() => {
+    // delay (in ms) between iterations
+    let iteration_delay = 0;
     // map for colors
     let colors = {};
     colors[true] = "#00FF00";
@@ -237,7 +239,7 @@ $(document).ready(() => {
             playSound(cells, rows, cols);
         }
         console.log("NUM CLUSTERS: " + getNumClusters(cells, rows, cols));
-        setTimeout(runLoop, 2);
+        setTimeout(runLoop, iteration_delay);
     }
     // draw initial grid
     drawGrid();
