@@ -212,21 +212,6 @@ $(document).ready(() => {
         let str_m = JSON.stringify(m);
         // console.log("size of posted map: " + Object.keys(m).length);
         $.post(producePostParams(str_m));
-        // $.post("/update", str_m, (responseJson) => {
-        //     responseJson = JSON.parse(responseJson);
-        //     console.log("size of response: " + Object.keys(responseJson).length);
-        //     let draw_time = new Date().getTime();
-        //     for(const key of Object.keys(responseJson)) {
-        //         // parse stringified key into array of ints
-        //         let arr = JSON.parse(key);
-        //         // fill in the cell
-        //         // note that updating our cell map is handled by drawCell
-        //         drawCell(parseInt(arr[0]), parseInt(arr[1]), responseJson[key]);
-        //     }
-        //     console.log("received and finished");
-        //     console.log("total time to draw: " + (new Date().getTime() - draw_time).toString());
-        //     console.log("total time to post: " + (new Date().getTime() - start_time).toString());
-        // });
     }
     function runLoop() {
         if(!run) {
@@ -238,7 +223,7 @@ $(document).ready(() => {
         if(sound) {
             playSound(cells, rows, cols);
         }
-        console.log("NUM CLUSTERS: " + getNumClusters(cells, rows, cols));
+        // console.log("NUM CLUSTERS: " + getNumClusters(cells, rows, cols));
         setTimeout(runLoop, iteration_delay);
     }
     // draw initial grid
